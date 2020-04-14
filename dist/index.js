@@ -15,6 +15,7 @@
         Game.prototype.inicialize = function () {
             this.width = $map.clientWidth;
             this.height = $map.clientHeight;
+            this.tries = 20;
             this.clicks = 0;
             this.coordinates = {
                 x: this.randomNumber(this.width),
@@ -78,32 +79,38 @@
         };
         Game.prototype.gameOver = function () {
             var _this = this;
+            $map.removeEventListener('click', this.findTreasure);
             swal({
                 icon: 'error',
                 title: 'Has perdido',
                 text: "Seguro en la pr\u00F3xima lo logras!"
             }).then(function () {
-                $map.removeEventListener('click', _this.findTreasure.bind(_this));
+                location.reload();
+                _this.inicialize();
+            });
+        };
+        Game.prototype.gameWon = function () {
+            var _this = this;
+            $map.removeEventListener('click', this.findTreasure);
+            swal({
+                icon: 'success',
+                title: 'Lo encontraste!!',
+                text: "\u00A1Encontraste el tesoro en " + this.clicks + " clicks!"
+            }).then(function () {
+                location.reload();
                 _this.inicialize();
             });
         };
         Game.prototype.findTreasure = function (event) {
-            var _this = this;
             this.clicks++;
+            console.log("findTreasure -> clicks", this.clicks);
             var distance = this.distanceTreasure(event, this.coordinates);
             this.tracks(distance);
-            if (this.clicks === 20) {
+            if (this.clicks === this.tries) {
                 this.gameOver();
             }
             if (distance < 20) {
-                swal({
-                    icon: 'success',
-                    title: 'Lo encontraste!!',
-                    text: "\u00A1Encontraste el tesoro en " + this.clicks + " clicks!"
-                }).then(function () {
-                    $map.removeEventListener('click', _this.findTreasure.bind(_this));
-                    _this.inicialize();
-                });
+                this.gameWon();
             }
         };
         return Game;

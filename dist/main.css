@@ -39,12 +39,15 @@ h1{
 }
 
 .tracks{
-    width: 500px;
+    max-width: 90vw;
+    padding: 5px 10px;
     border: 1px solid #494949;
-    margin: 0 auto 20px;
     border-radius: 25px;
+    margin: 0 auto 20px;
 }
 
 .track{
+    margin: 0;
+    padding: 0;
     text-align: center;
 }

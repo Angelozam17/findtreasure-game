@@ -16,6 +16,7 @@
         height: number;
         clicks: number;
         coordinates: {};
+        tries: number;
     
         constructor(){
             this.inicialize()  
@@ -24,6 +25,7 @@
         inicialize(){   
             this.width = $map.clientWidth;
             this.height = $map.clientHeight;
+            this.tries = 20;
             this.clicks = 0;
             this.coordinates = {
                 x: this.randomNumber(this.width),
@@ -89,34 +91,39 @@
         }
     
         gameOver(){
+            $map.removeEventListener('click', this.findTreasure)
             swal({
                 icon: 'error',
                 title: 'Has perdido',
                 text: `Seguro en la próxima lo logras!`,
             }).then(() => {
-                $map.removeEventListener('click', this.findTreasure.bind(this))
+                location.reload()
                 this.inicialize()
             }) 
+        }
+
+        gameWon(){
+            $map.removeEventListener('click', this.findTreasure)
+            swal({
+                icon: 'success',
+                title: 'Lo encontraste!!',
+                text: `¡Encontraste el tesoro en ${this.clicks} clicks!`,
+            }).then(() => {
+                location.reload()
+                this.inicialize()
+            })
         }
     
         findTreasure(event){
             this.clicks++;
+            console.log("findTreasure -> clicks", this.clicks)
             const distance = this.distanceTreasure(event, this.coordinates)
-    
+            
             this.tracks(distance);
-    
-            if(this.clicks === 20){this.gameOver()}
-    
-            if(distance < 20){
-                swal({
-                    icon: 'success',
-                    title: 'Lo encontraste!!',
-                    text: `¡Encontraste el tesoro en ${this.clicks} clicks!`,
-                }).then(() => {
-                    $map.removeEventListener('click', this.findTreasure.bind(this))
-                    this.inicialize()
-                })       
-            }
+            
+            if(this.clicks === this.tries){this.gameOver()}
+            
+            if(distance < 20){this.gameWon()}
         }
     
     }
